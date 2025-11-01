@@ -45,7 +45,7 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
     ```bash
     streamlit run finrobo_app.py
 
-4. Deployed on [Streamlit Cloud 🔗](https://share.streamlit.io/)
+4. Deployed on [Streamlit Cloud 🔗](https://fin-robo-your-ai-powered-financial-analyst.streamlit.app/)
 
 5. Once open:
    Enter your OpenRouter API key in the sidebar.
