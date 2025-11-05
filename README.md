@@ -1,4 +1,4 @@
-## Fin-Robo 🧠💰 — Your AI-Powered Financial Analyst
+## [Fin-Robo 🧠💰 — Your AI-Powered Financial Analyst](https://fin-robo-your-ai-powered-financial-analyst.streamlit.app/)
 
 Fin-Robo 🧠💰 is an **AI-driven stock analysis agent** built using **Streamlit**, **OpenRouter LLMs**, and **YFinance**.  
 It helps users compare multiple stocks, analyze performance, and get AI-powered insights in real-time.
