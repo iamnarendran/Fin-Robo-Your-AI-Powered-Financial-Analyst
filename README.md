@@ -48,7 +48,7 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 4. Deployed on [Streamlit Cloud 🔗](https://fin-robo-your-ai-powered-financial-analyst.streamlit.app/)
 
 5. Once open:
-   Enter your OpenRouter API key in the sidebar.
+   Enter your OpenRouter API key or Gemini API Key in the sidebar.
    Select an AI model.
    Choose or type stock tickers.
    Ask Fin-Robo questions like:
@@ -65,6 +65,28 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 - 🧩 Portfolio optimization suggestions
 
 - 📊 Sentiment tracking and forecasting
+
+ - 📽️ Youtube Search Integration for News Trends on Finance
+             
+ - 💹 Realtime Market Tracker Dashboard
+             
+ - 📊 Fin-Robo “Advisor Mode” (Recommendation Insights) to analyze a user’s watchlist and suggest buy/sell ideas.
+                
+- 🗣️ Multi-Agent System (With LangGraph) 
+                
+     - 📈 Analyst Agent: Handles stock trends & metrics
+
+     - 📰 News Agent: Summarizes breaking news
+
+     - 💬 Advisor Agent: Gives recommendations
+
+     - 🎨 Visualizer Agent: Plots insights dynamically
+
+ - 💰 Portfolio Simulation Mode (User Uploads Portfolio CSV)
+             
+ - 👨‍🏫 AI-Powered Investment Tutor Mode
+             
+ - 🧠 SLM implementation (Local access)
 ------
 🔗 Author
 
