@@ -4,3 +4,5 @@ openai
 yfinance
 matplotlib
 plotly
+google
+google.genai
