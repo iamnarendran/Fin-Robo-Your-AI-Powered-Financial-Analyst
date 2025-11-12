@@ -57,7 +57,7 @@ with st.sidebar:
     with st.sidebar.expander("📘 How to Use Fin-Robo"):
         st.markdown("""
         **Welcome to Fin-Robo – Your AI Financial Analyst 🧠💰**
-
+        
         **Steps to use:**
         1. Enter your **OpenRouter API Key** Or **Gemini API Key** Below.
         2. Choose your **AI Model**.
@@ -163,11 +163,13 @@ with st.sidebar:
 
 with st.sidebar.expander("🔮💐 Future Updates :"):
     st.markdown("""
-    These are what i planed to make :
+    These are what I planned to make :
                 
     - 🗣️ Voice-based financial Q&A
 
-    - 📰 Real-time stock news summarization
+    - 🪙 Crypto Data Analysis
+
+    - 📰 Real-time stock news summarisation
                 
     - 📊 Sentiment tracking and forecasting
                 
@@ -175,13 +177,13 @@ with st.sidebar.expander("🔮💐 Future Updates :"):
                 
     - 💹 Realtime Market Tracker Dashboard
                 
-    - 📊 Fin-Robo “Advisor Mode” (Recommendation Insights) to analyze a user’s watchlist and suggest buy/sell ideas.
+    - 📊 Fin-Robo “Advisor Mode” (Recommendation Insights) to analyse a user’s watchlist and suggest buy/sell ideas.
                 
     - 🗣️ Multi-Agent System (With LangGraph) 
                 
         - 📈 Analyst Agent: Handles stock trends & metrics
 
-        - 📰 News Agent: Summarizes breaking news
+        - 📰 News Agent: Summarises breaking news
 
         - 💬 Advisor Agent: Gives recommendations
 
