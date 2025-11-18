@@ -30,11 +30,9 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 
 ## Chat with Fin-Robo
 
-<img width="1271" height="509" alt="Fin-Robo image4" src="https://github.com/user-attachments/assets/b29ed912-a920-425b-9a5b-0dbe1f233bec" />
-
------
-
 <img width="1281" height="487" alt="Fin-Robo image3" src="https://github.com/user-attachments/assets/b8cdae95-9991-4508-b9f6-095721f2392d" />
+
+<img width="1271" height="509" alt="Fin-Robo image4" src="https://github.com/user-attachments/assets/b29ed912-a920-425b-9a5b-0dbe1f233bec" />
 
 ------
 ## 🧰 Tech Stack
