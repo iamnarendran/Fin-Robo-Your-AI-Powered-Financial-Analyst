@@ -90,8 +90,11 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
              
  - 🧠 SLM implementation (Local access)
 ------
-# Video:
-![Fin-Robo video](https://github.com/iamnarendran/Fin-Robo-Your-AI-Powered-Financial-Analyst/blob/main/utils/Fin-Robo%20video.mp4)
+## Video:
+
+https://github.com/user-attachments/assets/e858bae8-4d37-4788-890c-de0e4cde6d84
+
+
 
 ------
 🔗 Author
