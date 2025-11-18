@@ -74,6 +74,13 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 
 -----
 
+## Video:
+
+https://github.com/user-attachments/assets/e858bae8-4d37-4788-890c-de0e4cde6d84
+
+------
+
+
 ## 🪄 Future Ideas
 
 - 🗣️ Voice-based financial Q&A
@@ -106,11 +113,7 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
              
  - 🧠 SLM implementation (Local access)
 ------
-## Video:
 
-https://github.com/user-attachments/assets/e858bae8-4d37-4788-890c-de0e4cde6d84
-
-------
 🔗 Author
 
 👨‍💻 **Narendran Karthikeyan**
