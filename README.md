@@ -1,6 +1,6 @@
 ## [Fin-Robo 🧠💰 — Your AI-Powered Financial Analyst](https://fin-robo-your-ai-powered-financial-analyst.streamlit.app/)
 
-![Fin-Robo](https://github.com/iamnarendran/Fin-Robo-Your-AI-Powered-Financial-Analyst/blob/main/utils/Fin-Robo%20image.png)
+<img width="1361" height="496" alt="Fin-Robo image" src="https://github.com/user-attachments/assets/3cc5b2d2-88b4-40c1-abe3-21dfb04d32a8" />
 
 Fin-Robo 🧠💰 is an **AI-driven stock analyst Workflow** built using **Streamlit**, **OpenRouter LLMs**, and **YFinance**.  
 It helps users compare multiple stocks, analyze performance, and get AI-powered insights in real-time.
@@ -19,8 +19,24 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 - 🧾 Contextual chat memory for financial Q&A
 - 👨‍💻 Built for learning + production readiness
 
----
+-----
+## Stock price Chart
 
+<img width="1226" height="415" alt="Fin-Robo image1" src="https://github.com/user-attachments/assets/5656df37-7c3d-420b-8a68-a457013bb501" />
+
+## Combined-Close Comparison Stock chart
+
+<img width="1279" height="419" alt="Fin-Robo image2" src="https://github.com/user-attachments/assets/bcafd02b-21a1-4dea-b688-2b054bd4cd0f" />
+
+## Chat with Fin-Robo
+
+<img width="1271" height="509" alt="Fin-Robo image4" src="https://github.com/user-attachments/assets/b29ed912-a920-425b-9a5b-0dbe1f233bec" />
+
+-----
+
+<img width="1281" height="487" alt="Fin-Robo image3" src="https://github.com/user-attachments/assets/b8cdae95-9991-4508-b9f6-095721f2392d" />
+
+------
 ## 🧰 Tech Stack
 
 - **Frontend/UI:** Streamlit  
@@ -58,7 +74,9 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
       “Compare Tesla and Apple this year.”
       “Is Google a good buy now based on the chart?”
 
-🪄 Future Ideas
+-----
+
+## 🪄 Future Ideas
 
 - 🗣️ Voice-based financial Q&A
 
@@ -93,8 +111,6 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 ## Video:
 
 https://github.com/user-attachments/assets/e858bae8-4d37-4788-890c-de0e4cde6d84
-
-
 
 ------
 🔗 Author
