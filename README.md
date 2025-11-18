@@ -1,6 +1,6 @@
 ## [Fin-Robo 🧠💰 — Your AI-Powered Financial Analyst](https://fin-robo-your-ai-powered-financial-analyst.streamlit.app/)
 
-![Fin-Robo](https://github.com/iamnarendran/Fin-Robo-Your-AI-Powered-Financial-Analyst/blob/main/Fin-Robo%20%F0%9F%A7%A0%F0%9F%92%B0%20is%20an%20AI-driven%20stock%20analyst%20Workflow.png)
+![Fin-Robo](https://github.com/iamnarendran/Fin-Robo-Your-AI-Powered-Financial-Analyst/blob/main/utils/Fin-Robo%20image.png)
 
 Fin-Robo 🧠💰 is an **AI-driven stock analyst Workflow** built using **Streamlit**, **OpenRouter LLMs**, and **YFinance**.  
 It helps users compare multiple stocks, analyze performance, and get AI-powered insights in real-time.
@@ -89,6 +89,10 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
  - 👨‍🏫 AI-Powered Investment Tutor Mode
              
  - 🧠 SLM implementation (Local access)
+------
+# Video:
+![Fin-Robo video](https://github.com/iamnarendran/Fin-Robo-Your-AI-Powered-Financial-Analyst/blob/main/utils/Fin-Robo%20video.mp4)
+
 ------
 🔗 Author
 
