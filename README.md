@@ -111,7 +111,7 @@ https://github.com/user-attachments/assets/e858bae8-4d37-4788-890c-de0e4cde6d84
              
  - 👨‍🏫 AI-Powered Investment Tutor Mode
              
- - 🧠 SLM implementation (Local access)
+ - 🧠 SLM implementation (Local)
 ------
 
 🔗 Author
