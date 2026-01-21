@@ -76,11 +76,10 @@ with st.sidebar:
 
     provider = st.sidebar.radio(
         "Select your provider:",
-        ["[Gemini](https://aistudio.google.com/api-keys) (For faster response)" , 
-         "[OpenRouter](https://openrouter.ai/settings/keys)"]
+        ["OpenRouter", "Gemini"]
     )
     
-    if provider == "[OpenRouter](https://openrouter.ai/settings/keys)":
+    if provider == "[OpenRouter]":
         st.header("🔑 API Key Setup")
             
         api_key = st.text_input("Enter your OpenRouter API key", type="password")
