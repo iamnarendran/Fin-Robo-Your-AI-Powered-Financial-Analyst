@@ -76,7 +76,7 @@ with st.sidebar:
 
     provider = st.sidebar.radio(
         "Select your provider:",
-        ["OpenRouter", "Gemini"]
+        ["Gemini (For faster response)", "OpenRouter"]
     )
     
     if provider == "OpenRouter":
