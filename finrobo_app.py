@@ -59,7 +59,7 @@ with st.sidebar:
         **Welcome to Fin-Robo – Your AI Financial Analyst 🧠💰**
         
         **Steps to use:**
-        1. Enter your **OpenRouter API Key** Or **Gemini API Key** Below.
+        1. Enter your **OpenRouter🌳 API Key** Or **Gemini✨ API Key** Below.
         2. Choose your **AI Model**.
         3. Select or type stock tickers (e.g., `AAPL`, `GOOGL`, `TSLA`).
         4. Choose a **time period** (e.g., `6mo`, `1y`, etc.).
@@ -70,17 +70,17 @@ with st.sidebar:
         - “Summarize Google’s performance in 2024.”
         """)
 
-        st.info("💡 Tip: You can use any OpenRouter-supported model!")
+        st.info("💡 Tip: You can use any OpenRouter🌳-supported model!")
 
     st.sidebar.subheader("🔑 Choose AI Provider")
-    st.sidebar.info("You can get API keys here : \n\n[OpenRouter](https://openrouter.ai/settings/keys) \n[Gemini](https://aistudio.google.com/api-keys)")
+    st.sidebar.info("💡 You can get API keys here : \n\n[OpenRouter🌳](https://openrouter.ai/settings/keys) \n[Gemini✨](https://aistudio.google.com/api-keys)")
 
     provider = st.sidebar.radio(
         "Select your provider:",
-        ["OpenRouter", "Gemini"]
+        ["OpenRouter🌳", "Gemini✨"]
     )
         
-    if provider == "OpenRouter":
+    if provider == "OpenRouter🌳":
         st.header("🔑 API Key Setup")
             
         api_key = st.text_input("Enter your OpenRouter API key", type="password")
@@ -122,7 +122,7 @@ with st.sidebar:
 
         st.session_state["model_name"] = model_name
 
-    elif provider == "Gemini":
+    elif provider == "Gemini✨":
         st.header("🔑 API Key Setup")
         api_key = st.text_input("Enter your Gemini API Key", type="password")
         
