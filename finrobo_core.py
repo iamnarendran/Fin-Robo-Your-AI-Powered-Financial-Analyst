@@ -42,7 +42,7 @@ def plot_stock_data(df, ticker):
 
 # --- AI Financial Analysis ---
 def analyze_stocks_with_ai_prompt(Prompt,API_KEY,Model,Provider):
-    if Provider == "OpenRouter":
+    if Provider == "OpenRouter🌳":
         client = OpenAI(base_url="https://openrouter.ai/api/v1",api_key=API_KEY)
 
         response = client.chat.completions.create(
@@ -52,7 +52,7 @@ def analyze_stocks_with_ai_prompt(Prompt,API_KEY,Model,Provider):
         )
         return response.choices[0].message.content
     
-    elif Provider == "Gemini":
+    elif Provider == "Gemini✨":
 
         try:
             
