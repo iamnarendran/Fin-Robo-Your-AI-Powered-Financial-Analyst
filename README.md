@@ -34,6 +34,8 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 
 <img width="1271" height="509" alt="Fin-Robo image4" src="https://github.com/user-attachments/assets/b29ed912-a920-425b-9a5b-0dbe1f233bec" />
 
+<img width="1313" height="505" alt="Screenshot from 2026-01-21 12-20-51" src="https://github.com/user-attachments/assets/c54f5f52-122a-48df-b0bd-0cd1045bb1ec" />
+
 ------
 ## 🧰 Tech Stack
 
@@ -49,7 +51,7 @@ It helps users compare multiple stocks, analyze performance, and get AI-powered 
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/fin-robo.git
+   git clone https://github.com/iamnarendran/Fin-Robo-Your-AI-Powered-Financial-Analyst
    cd fin-robo
 
 2. Install dependencies:
@@ -119,3 +121,5 @@ https://github.com/user-attachments/assets/e858bae8-4d37-4788-890c-de0e4cde6d84
 👨‍💻 **Narendran Karthikeyan**
 
 📎 [LinkedIn](https://github.com/iamnarendran) | [GitHub](https://www.linkedin.com/in/narendran-karthikeyan%F0%9F%8C%B3-95862423b)|
+
+-----
