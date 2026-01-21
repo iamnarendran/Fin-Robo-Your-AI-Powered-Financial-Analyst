@@ -98,7 +98,8 @@ with st.sidebar:
             st.sidebar.markdown("### 🧠 Choose AI Model")
 
             model_options = {
-                "GPT OSS 20B (Best)": "openai/gpt-oss-20b:free",
+                "Mistral 7b (Best)": "mistralai/mistral-7b-instruct",
+                "GPT OSS 20B": "openai/gpt-oss-20b:free",
                 "Google Gemma": "google/gemma-3-27b-it:free",
                 "Meta Llama 3.3": "meta-llama/llama-3.3-8b-instruct:free",
                 "Llama Maverick 4": "meta-llama/llama-4-maverick:free",
@@ -111,7 +112,7 @@ with st.sidebar:
 
             if selected_model == "🔧 Custom (Type below)":
                 custom_model = st.sidebar.text_input("Enter your custom OpenRouter model name: /n custom models search here:'https://openrouter.ai/models'")
-                model_name = custom_model if custom_model else "openai/gpt-oss-20b:free"
+                model_name = custom_model if custom_model else "mistralai/mistral-7b-instruct"
                 st.success(f"Don't Panic, {model_name} will run only in free of cost")
             else:
                 model_name = model_options[selected_model]
