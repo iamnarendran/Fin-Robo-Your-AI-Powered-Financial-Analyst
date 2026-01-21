@@ -79,7 +79,7 @@ with st.sidebar:
         ["OpenRouter", "Gemini"]
     )
     
-    if provider == "[OpenRouter]":
+    if provider == "OpenRouter":
         st.header("🔑 API Key Setup")
             
         api_key = st.text_input("Enter your OpenRouter API key", type="password")
