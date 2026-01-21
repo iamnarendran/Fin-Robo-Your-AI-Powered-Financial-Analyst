@@ -76,7 +76,7 @@ with st.sidebar:
 
     provider = st.sidebar.radio(
         "Select your provider:",
-        [Gemini]("https://aistudio.google.com/api-keys") (For faster response)", "OpenRouter"]
+        ["[Gemini]("https://aistudio.google.com/api-keys") (For faster response)", "OpenRouter"]
     )
     
     if provider == "OpenRouter":
