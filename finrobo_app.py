@@ -74,6 +74,7 @@ with st.sidebar:
 
     st.sidebar.subheader("🔑 Choose AI Provider")
     st.sidebar.info("You can get API keys here : [OpenRouter](https://openrouter.ai/settings/keys) [Gemini](https://aistudio.google.com/api-keys)")
+    
     provider = st.sidebar.radio(
         "Select your provider:
         ["OpenRouter", "Gemini"]
