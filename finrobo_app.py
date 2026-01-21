@@ -80,7 +80,7 @@ with st.sidebar:
          "[OpenRouter](https://openrouter.ai/settings/keys)"]
     )
     
-    if provider == "OpenRouter":
+    if provider == "[OpenRouter](https://openrouter.ai/settings/keys)":
         st.header("🔑 API Key Setup")
             
         api_key = st.text_input("Enter your OpenRouter API key", type="password")
