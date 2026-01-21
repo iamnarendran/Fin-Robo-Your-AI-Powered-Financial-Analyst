@@ -195,7 +195,7 @@ with st.sidebar.expander("🔮💐 Future Updates :"):
                 
     - 🧠 SLM implementation (Local access)
     """)
-    st.info("✨ These are planned upgrades — designed to make Fin-Robo a full AI financial companion.")
+    st.info("✨ These are planned upgrades designed to make Fin-Robo a full AI financial companion.")
 
 # ---------- TAB 2 ----------
 
