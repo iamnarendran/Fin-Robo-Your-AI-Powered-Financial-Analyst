@@ -59,7 +59,7 @@ with st.sidebar:
         **Welcome to Fin-Robo – Your AI Financial Analyst 🧠💰**
         
         **Steps to use:**
-        1. Enter your **OpenRouter API Key** Or **[Gemini API Key]("https://aistudio.google.com/api-keys")** Below.
+        1. Enter your **OpenRouter API Key** Or **Gemini API Key** Below.
         2. Choose your **AI Model**.
         3. Select or type stock tickers (e.g., `AAPL`, `GOOGL`, `TSLA`).
         4. Choose a **time period** (e.g., `6mo`, `1y`, etc.).
@@ -76,7 +76,7 @@ with st.sidebar:
 
     provider = st.sidebar.radio(
         "Select your provider:",
-        ["Gemini (For faster response)", "OpenRouter"]
+        ["[Gemini]("https://aistudio.google.com/api-keys") (For faster response)", "OpenRouter"]
     )
     
     if provider == "OpenRouter":
