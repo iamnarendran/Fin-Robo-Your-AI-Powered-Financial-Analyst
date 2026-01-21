@@ -78,6 +78,7 @@ with st.sidebar:
         "Select your provider:",
         ["OpenRouter", "Gemini"]
     )
+    st.info("You can get API keys here : [OpenRouter](https://openrouter.ai/settings/keys) [Gemini](https://aistudio.google.com/api-keys)")
     
     if provider == "OpenRouter":
         st.header("🔑 API Key Setup")
