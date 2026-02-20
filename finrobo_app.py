@@ -275,7 +275,7 @@ with st.sidebar.expander("🔮💐 Future Updates :"):
                 if msg["role"] == "user":
                     st.markdown(f"<div class='chat-bubble-user'>YOU 💬🕵️: {msg['content']}</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"<div class='chat-bubble-bot'>AI 🧠💰: {msg['\n content']}</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='chat-bubble-bot'>AI 🧠💰: {msg['content']}</div>", unsafe_allow_html=True)
             
             st.markdown("\n")
             # --- User Query Input ---
