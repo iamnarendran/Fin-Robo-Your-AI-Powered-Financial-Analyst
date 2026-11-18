@@ -5,6 +5,7 @@ import { z } from "zod";
 import { pctChange, summarize, maxDrawdown, rsi, volatility } from "@/lib/indicators";
 import { getHistory, getProfile, getQuote, getQuotes, searchSymbols } from "@/lib/market-data";
 import { GLOBAL_MARKETS, INDIA_INDICES, NIFTY_50 } from "@/lib/markets";
+import { getMoveTimeline } from "@/lib/news";
 import type { Candle, Quote } from "@/lib/types";
 
 /**
@@ -209,6 +210,51 @@ export const tools = {
         breadth,
       };
     },
+  }),
+
+  explainPriceMoves: tool({
+    description:
+      "Explain WHY a stock or index moved: finds unusual daily moves in the last month, compares each with the benchmark (NIFTY 50 / S&P 500) to tell stock-specific from market-wide moves, and links them to news headlines published around the move. Also returns the latest headlines. Use for 'why did X fall/rise', 'what happened to X', 'latest news on X'.",
+    inputSchema: z.object({ symbol: symbolSchema }),
+    execute: async ({ symbol }) => {
+      const quote = await requireQuote(symbol);
+      const { moves, articles, benchmark, candles } = await getMoveTimeline(symbol, quote.name);
+      // Keep every cited article plus the most recent ones, in id order.
+      const cited = new Set(moves.flatMap((m) => m.articleIds));
+      const shown = articles.filter((a, i) => cited.has(a.id) || i < 8);
+      const recent = candles.slice(-66);
+      return {
+        quote: compactQuote(quote),
+        benchmark,
+        moves,
+        articles: shown,
+        series: recent.map((c) => ({ time: c.time, value: c.close })),
+      };
+    },
+    toModelOutput: ({ output }) => ({
+      type: "json",
+      value: {
+        ...output.quote,
+        benchmark: output.benchmark?.name ?? null,
+        moves: output.moves.map((m) => ({
+          date: m.date,
+          changePct: round(m.changePct),
+          benchmarkChangePct: round(m.benchmarkChangePct),
+          vsBenchmarkPct: round(m.relativePct),
+          kind: m.kind,
+          unusual: m.unusual,
+          sourceNumbers: m.articleIds.map(Number),
+        })),
+        articles: output.articles.map((a) => ({
+          n: Number(a.id),
+          title: a.title,
+          publisher: a.publisher,
+          published: new Date(a.publishedAt).toISOString().slice(0, 16).replace("T", " ") + " UTC",
+          tone: a.tone,
+        })),
+        note: output.articles.length === 0 ? "No headlines were found for this period." : undefined,
+      },
+    }),
   }),
 
   explainConcept: tool({

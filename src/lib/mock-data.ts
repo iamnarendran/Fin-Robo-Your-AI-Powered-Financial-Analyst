@@ -1,4 +1,5 @@
 import { INDIA_INDICES, GLOBAL_MARKETS, NIFTY_50, POPULAR_US, knownName } from "./markets";
+import { detectMoves, headlineTone, type Article } from "./moves";
 import type { Candle, Profile, Quote, Range, SearchResult } from "./types";
 
 /**
@@ -65,7 +66,9 @@ function generateWalk(symbol: string, days: number): Candle[] {
     const date = new Date(today.getTime() - i * 86_400_000);
     if (date.getUTCDay() === 0 || date.getUTCDay() === 6) continue;
     const open = price;
-    const close = Math.max(1, open * (1 + drift + (rand() - 0.5) * 2 * vol));
+    // Real returns have fat tails: roughly one session in 25 is a news-driven shock.
+    const shock = rand() < 0.04 ? (rand() < 0.5 ? -1 : 1) * vol * (3 + rand() * 2) : 0;
+    const close = Math.max(1, open * (1 + drift + shock + (rand() - 0.5) * 2 * vol));
     const high = Math.max(open, close) * (1 + rand() * vol * 0.6);
     const low = Math.min(open, close) * (1 - rand() * vol * 0.6);
     candles.push({
@@ -173,4 +176,40 @@ export function mockSearch(query: string): SearchResult[] {
       exchange: i.symbol.endsWith(".NS") ? "NSE" : i.symbol.startsWith("^") ? "Index" : "NASDAQ",
       type: i.symbol.startsWith("^") ? "INDEX" : "EQUITY",
     }));
+}
+
+const UP_HEADLINES = [
+  "{name} shares jump after strong quarterly results beat estimates",
+  "{name} rallies as brokerages upgrade the stock on margin outlook",
+  "{name} wins large order, stock climbs to multi-week high",
+];
+const DOWN_HEADLINES = [
+  "{name} shares fall after quarterly profit misses estimates",
+  "{name} slides as brokerage downgrades stock, cuts target",
+  "{name} drops amid sector-wide sell-off in heavyweights",
+];
+const BACKGROUND_HEADLINES = [
+  "What analysts expect from {name} ahead of next quarter",
+  "{name} board to consider fundraise proposal next week",
+  "FII holding in {name} changes marginally in latest filing",
+  "{name} management outlines growth plans at investor meet",
+];
+
+/** Demo headlines placed on the same days as the mock series' unusual moves. */
+export function mockNews(symbol: string, name: string): Article[] {
+  const candles = mockHistory(symbol, "1y");
+  const rand = rng(hash(symbol + "news"));
+  const pick = (list: string[]) => list[Math.floor(rand() * list.length)].replace("{name}", name);
+  const articles: Omit<Article, "id">[] = [];
+
+  for (const move of detectMoves(candles, { lookbackSessions: 22 })) {
+    const title = pick(move.changePct > 0 ? UP_HEADLINES : DOWN_HEADLINES);
+    articles.push({ title, publisher: "Demo Wire", url: "https://example.com/demo-news", publishedAt: (move.time + 2 * 3600) * 1000, tone: headlineTone(title) });
+  }
+  const latest = candles[candles.length - 1].time;
+  for (let i = 0; i < 4; i++) {
+    const title = BACKGROUND_HEADLINES[i].replace("{name}", name);
+    articles.push({ title, publisher: "Demo Wire", url: "https://example.com/demo-news", publishedAt: (latest - i * 3 * 86_400 + 3600) * 1000, tone: headlineTone(title) });
+  }
+  return articles.sort((a, b) => b.publishedAt - a.publishedAt).map((a, i) => ({ ...a, id: String(i + 1) }));
 }

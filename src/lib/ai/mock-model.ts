@@ -100,6 +100,19 @@ function narrate(results: ToolResult[]): { prose: string; followUps: string[] } 
         followUps: [`Analyse ${best?.symbol?.replace(".NS", "")}`, "What is max drawdown?", "Compare over 5 years"],
       };
     }
+    case "explainPriceMoves": {
+      type M = { date: string; changePct: number; vsBenchmarkPct: number | null; kind: string; unusual: boolean; sourceNumbers: number[] };
+      const moves = (v.moves ?? []) as M[];
+      const lines = moves.slice(0, 3).map((m) => {
+        const cite = m.sourceNumbers.length ? ` It coincided with ${m.sourceNumbers.map((n) => `[${n}]`).join("")}.` : " No clear news catalyst was found.";
+        const kind = m.kind === "unknown" ? "" : ` This looks ${m.kind}${m.vsBenchmarkPct != null ? ` (${pct(m.vsBenchmarkPct)} vs ${v.benchmark})` : ""}.`;
+        return `- **${m.date}**: ${pct(m.changePct)}${m.unusual ? " (unusual)" : ""}.${kind}${cite}`;
+      });
+      return {
+        prose: `Here's what moved **${v.name}** recently:\n\n${lines.join("\n")}\n\nHeadlines show timing, not proven cause.\n\n_Demo mode: headlines are synthetic._`,
+        followUps: [`Analyse ${String(v.symbol).replace(".NS", "")}`, `Compare ${String(v.symbol).replace(".NS", "")} with NIFTY`, "How is the market today?"],
+      };
+    }
     case "getMarketOverview":
       return {
         prose: `Here's today's snapshot. Breadth among NIFTY 50 stocks is ${v.breadth?.advancing} advancing vs ${v.breadth?.declining} declining.\n\n_Demo mode: this summary is scripted._`,
@@ -132,6 +145,9 @@ function plan(question: string): StreamPart[] {
       ],
       exampleSymbol: symbols[0] ?? "TCS.NS",
     });
+  }
+  if (symbols.length >= 1 && /\b(why|news|happen\w*|fell|fall\w*|drop\w*|jump\w*|rall\w*|surg\w*|mov\w*)\b/.test(q)) {
+    return toolCall("explainPriceMoves", { symbol: symbols[0] });
   }
   if (symbols.length >= 2 || /\b(compare|vs|versus)\b/.test(q)) {
     const picks = symbols.length >= 2 ? symbols : ["TCS.NS", "INFY.NS"];

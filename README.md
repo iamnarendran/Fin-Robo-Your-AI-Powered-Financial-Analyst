@@ -23,6 +23,15 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 - **No setup needed for visitors.** A shared Gemini key is rate-limited per IP. Users can add their own Gemini or OpenRouter key in **AI settings**; it stays in their browser.
 - Educational framing is built into the system prompt: no buy or sell calls.
 
+**News linked to price moves (phase 3)**
+
+- **Unusual-move detection.** Daily moves at least 2σ beyond a stock's own volatility (and at least 1.5%) are flagged and marked on the price chart. Hover a marker to see the move.
+- **News matching.** Headlines from Google News RSS (India edition for NSE stocks) and Yahoo Finance are de-duplicated and matched to each move by publish time, between the previous close and the move day's evening.
+- **Stock-specific or market-wide.** Every move is compared with NIFTY 50 (or the S&P 500 for US stocks), so "TCS fell 3%" is separated from "the whole market fell 3%".
+- **Headline tone.** Each headline gets a positive, negative or neutral label from a small keyword rule set: explainable, not a black box.
+- **Cited AI answers.** Ask "Why did TCS fall?" and the analyst answers with a timeline card, citing headlines inline as [n] links to the source articles. It's told to say "no clear catalyst" rather than guess, and to frame headlines as timing, not proven cause.
+- A **"Why it moved"** section on every stock page streams in independently, so slow news feeds never block the chart.
+
 **Markets (phase 1)**
 
 - **Markets overview**: NIFTY 50, SENSEX, NIFTY Bank and NIFTY IT, plus global cues (S&P 500, Nasdaq, USD/INR, gold, Brent crude, Bitcoin) with sparklines.
@@ -40,7 +49,7 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 | Phase | What |
 |---|---|
 | 2 | ✅ AI analyst with tool calling and answers rendered as live components |
-| 3 | News linked to price moves. Unusual moves are matched to headlines, cited in AI answers, and marked on charts. |
+| 3 | ✅ News linked to price moves: unusual-move detection, benchmark comparison, cited AI answers |
 | 4 | Local-first watchlist and portfolio stored in localStorage, CSV import (Zerodha and Groww), and an AI portfolio review. |
 | 5 | A daily AI market brief, regenerated every few hours with no database. |
 
@@ -53,6 +62,8 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 | Styling | Tailwind CSS v4 with design tokens in `globals.css`; Geist font |
 | Charts | TradingView `lightweight-charts`, plus server-rendered SVG sparklines |
 | Market data | `yahoo-finance2`, server-side only, cached with `"use cache"` |
+| News | Google News RSS and Yahoo Finance, parsed and cached server-side |
+| Testing | Vitest unit tests for indicators and move/news linking; GitHub Actions CI |
 | AI | Vercel AI SDK v7 (`streamText`, typed tool parts, `useChat`), Gemini or OpenRouter |
 | Search UI | `cmdk` |
 | Hosting | Vercel |
@@ -78,6 +89,11 @@ FINROBO_MOCK=1 npm run dev   # synthetic data + scripted demo AI, no network or 
 ```
 
 Open http://localhost:3000.
+
+```bash
+npm test          # unit tests (indicators, move detection, news linking)
+npm run lint && npm run typecheck
+```
 
 ### Environment variables
 

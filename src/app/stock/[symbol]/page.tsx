@@ -4,11 +4,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ChangePill } from "@/components/market/change-pill";
+import { MoveTimeline } from "@/components/market/move-timeline";
 import { PriceChart } from "@/components/market/price-chart";
 import { CompanyProfile, KeyStats, PerformanceCard } from "@/components/market/stock-panels";
 import { summarize } from "@/lib/indicators";
 import { getHistory, getProfile, getQuote, safe } from "@/lib/market-data";
 import { displaySymbol, isIndianSymbol } from "@/lib/markets";
+import { detectMoves } from "@/lib/moves";
+import { getMoveTimeline } from "@/lib/news";
 import { cn, formatChange, formatPrice, trendClass } from "@/lib/utils";
 
 type Props = { params: Promise<{ symbol: string }> };
@@ -88,7 +91,12 @@ async function StockView({ params }: Props) {
         timeZone={exchangeTimeZone(symbol)}
         initialRange="6mo"
         initialCandles={chartCandles}
+        events={detectMoves(yearCandles).map((m) => ({ time: m.time, changePct: m.changePct }))}
       />
+
+      <Suspense fallback={<WhyItMovedSkeleton />}>
+        <WhyItMoved symbol={symbol} name={quote.name} />
+      </Suspense>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <KeyStats quote={quote} />
@@ -96,6 +104,46 @@ async function StockView({ params }: Props) {
         <CompanyProfile profile={profile} />
       </div>
     </div>
+  );
+}
+
+/** Streams separately: news sources can be slow, the chart above shouldn't wait. */
+async function WhyItMoved({ symbol, name }: { symbol: string; name: string }) {
+  const timeline = await safe(getMoveTimeline(symbol, name), null);
+  return (
+    <section className="rounded-xl border bg-card">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b px-4 py-3">
+        <h2 className="text-sm font-medium">Why it moved</h2>
+        <p className="text-xs text-muted-foreground">
+          Unusual moves in the last month, matched to headlines{timeline?.benchmark ? ` · compared with ${timeline.benchmark.name}` : ""}
+        </p>
+      </div>
+      <div className="p-4">
+        {!timeline ? (
+          <p className="text-sm text-muted-foreground">News is unavailable right now.</p>
+        ) : (
+          <MoveTimeline moves={timeline.moves} articles={timeline.articles} benchmarkName={timeline.benchmark?.name} />
+        )}
+      </div>
+    </section>
+  );
+}
+
+function WhyItMovedSkeleton() {
+  return (
+    <section className="rounded-xl border bg-card" aria-busy="true">
+      <div className="border-b px-4 py-3">
+        <div className="skeleton h-4 w-28" />
+      </div>
+      <div className="space-y-4 p-4">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="space-y-2">
+            <div className="skeleton h-4 w-48" />
+            <div className="skeleton h-4 w-full max-w-lg" />
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

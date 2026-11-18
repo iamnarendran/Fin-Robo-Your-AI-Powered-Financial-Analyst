@@ -6,8 +6,11 @@ import {
   CrosshairMode,
   HistogramSeries,
   createChart,
+  createSeriesMarkers,
   type IChartApi,
   type ISeriesApi,
+  type ISeriesMarkersPluginApi,
+  type Time,
   type UTCTimestamp,
 } from "lightweight-charts";
 import { useTheme } from "next-themes";
@@ -22,7 +25,29 @@ type Props = {
   timeZone: string;
   initialRange: Range;
   initialCandles: Candle[];
+  /** Unusual daily moves to mark on the chart (session time, epoch seconds). */
+  events?: { time: number; changePct: number }[];
 };
+
+const DAY = 86_400;
+
+/**
+ * Snap each daily event onto a bar of the current range: the exact daily bar,
+ * the last intraday bar of that day, or the weekly bar containing it.
+ */
+function placeEvents(candles: Candle[], events: Props["events"], range: Range) {
+  const placed = new Map<number, number>();
+  if (!events?.length || !candles.length) return placed;
+  const lookback = range === "5y" ? 7 * DAY : 0;
+  for (const e of events) {
+    let bar: Candle | undefined;
+    for (const c of candles) {
+      if (c.time >= e.time - lookback && c.time < e.time + DAY) bar = c;
+    }
+    if (bar && !placed.has(bar.time)) placed.set(bar.time, e.changePct);
+  }
+  return placed;
+}
 
 /** Seconds to add so the chart's UTC axis shows exchange-local time. */
 function tzOffsetSeconds(timeZone: string, unixSeconds: number) {
@@ -32,17 +57,18 @@ function tzOffsetSeconds(timeZone: string, unixSeconds: number) {
   return Math.round((local.getTime() - utc.getTime()) / 1000);
 }
 
-export function PriceChart({ symbol, currency, timeZone, initialRange, initialCandles }: Props) {
+export function PriceChart({ symbol, currency, timeZone, initialRange, initialCandles, events }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const areaRef = useRef<ISeriesApi<"Area"> | null>(null);
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+  const markersRef = useRef<ISeriesMarkersPluginApi<Time> | null>(null);
   const { resolvedTheme } = useTheme();
 
   const [range, setRange] = useState<Range>(initialRange);
   const [candles, setCandles] = useState<Candle[]>(initialCandles);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-  const [hover, setHover] = useState<{ price: number; label: string } | null>(null);
+  const [hover, setHover] = useState<{ price: number; label: string; move?: number } | null>(null);
 
   const intraday = range === "1d" || range === "5d" || range === "1mo";
   const first = candles[0]?.close;
@@ -56,10 +82,18 @@ export function PriceChart({ symbol, currency, timeZone, initialRange, initialCa
     [candles, timeZone],
   );
 
+  // Event positions in chart time (bar time + exchange offset) → % move.
+  const placed = useMemo(() => {
+    const byBar = placeEvents(candles, events, range);
+    return new Map([...byBar].map(([t, pct]) => [t + offset, pct]));
+  }, [candles, events, range, offset]);
+
   const intradayRef = useRef(intraday);
+  const placedRef = useRef(placed);
   useEffect(() => {
     intradayRef.current = intraday;
-  }, [intraday]);
+    placedRef.current = placed;
+  }, [intraday, placed]);
 
   // Create the chart once.
   useEffect(() => {
@@ -76,6 +110,7 @@ export function PriceChart({ symbol, currency, timeZone, initialRange, initialCa
     });
     areaRef.current = chart.addSeries(AreaSeries, { lineWidth: 2, priceLineVisible: false, lastValueVisible: true });
     volumeRef.current = chart.addSeries(HistogramSeries, { priceScaleId: "volume", priceFormat: { type: "volume" }, lastValueVisible: false, priceLineVisible: false });
+    markersRef.current = createSeriesMarkers(areaRef.current, []);
     chartRef.current = chart;
 
     chart.subscribeCrosshairMove((param) => {
@@ -88,7 +123,7 @@ export function PriceChart({ symbol, currency, timeZone, initialRange, initialCa
         month: "short",
         ...(intradayRef.current ? { hour: "numeric", minute: "2-digit" } : { year: "numeric" }),
       });
-      setHover({ price: point.value, label });
+      setHover({ price: point.value, label, move: placedRef.current.get(param.time as number) });
     });
 
     return () => {
@@ -134,6 +169,24 @@ export function PriceChart({ symbol, currency, timeZone, initialRange, initialCa
     chartRef.current?.timeScale().fitContent();
   }, [candles, offset, resolvedTheme]);
 
+  // Markers for unusual moves.
+  useEffect(() => {
+    if (!markersRef.current) return;
+    const upColor = cssVarToRgba("--up");
+    const downColor = cssVarToRgba("--down");
+    markersRef.current.setMarkers(
+      [...placed]
+        .sort((a, b) => a[0] - b[0])
+        .map(([time, pct]) => ({
+          time: time as UTCTimestamp,
+          position: pct >= 0 ? ("belowBar" as const) : ("aboveBar" as const),
+          shape: pct >= 0 ? ("arrowUp" as const) : ("arrowDown" as const),
+          color: pct >= 0 ? upColor : downColor,
+          size: 1,
+        })),
+    );
+  }, [placed, resolvedTheme]);
+
   async function selectRange(next: Range) {
     if (next === range) return;
     setRange(next);
@@ -157,7 +210,14 @@ export function PriceChart({ symbol, currency, timeZone, initialRange, initialCa
           {hover ? (
             <>
               <div className="font-medium tabular">{formatNumber(hover.price, 2, currency)}</div>
-              <div className="text-xs text-muted-foreground">{hover.label}</div>
+              <div className="text-xs text-muted-foreground">
+                {hover.label}
+                {hover.move != null && (
+                  <span className={cn("ml-2 font-medium", trendClass(hover.move))}>
+                    Unusual move {formatPercent(hover.move, 1)}
+                  </span>
+                )}
+              </div>
             </>
           ) : (
             <>
