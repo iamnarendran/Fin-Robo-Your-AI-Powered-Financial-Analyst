@@ -1,125 +1,80 @@
-## [Fin-Robo 🧠💰 — Your AI-Powered Financial Analyst](https://fin-robo-your-ai-powered-financial-analyst.streamlit.app/)
+# Fin-Robo
 
-<img width="1361" height="496" alt="Fin-Robo image" src="https://github.com/user-attachments/assets/3cc5b2d2-88b4-40c1-abe3-21dfb04d32a8" />
+**An AI financial analyst for Indian and global markets.**
+Track NIFTY, SENSEX and global cues, explore any stock, and (coming next) ask an analyst whose answers are built from live data and news, rendered as interactive cards instead of plain chat text.
 
-Fin-Robo 🧠💰 is an **AI-driven stock analyst Workflow** built using **Streamlit**, **OpenRouter LLMs**, and **YFinance**.  
-It helps users compare multiple stocks, analyze performance, and get AI-powered insights in real-time.
+> Fin-Robo v2 is a ground-up rebuild. The original Streamlit prototype from early 2026 lives in [`legacy/`](./legacy) for reference.
 
-✨ Fin-Robo 🧠💰 is because numbers tell stories, and AI helps you read them better.
+## Features
 
----
+**Available now (phase 1)**
 
-## 🚀 Features
+- **Markets overview**: NIFTY 50, SENSEX, NIFTY Bank and NIFTY IT, plus global cues (S&P 500, Nasdaq, USD/INR, gold, Brent crude, Bitcoin) with sparklines.
+- **NIFTY 50 movers**: top gainers, top losers and most active by traded value.
+- **Stock pages** for any NSE, BSE or US symbol:
+  - an interactive price chart covering 1D to 5Y, shown in exchange-local time
+  - key stats and the 52-week range
+  - computed performance: returns, volatility, max drawdown, RSI and moving-average trend
+  - a company profile
+- **⌘K search** across every Yahoo Finance listing, with NSE and BSE results first.
+- Indian number formatting (₹, lakh and crore), NSE and NYSE open/closed status, dark mode, and a mobile layout.
 
-- 📊 Multi-stock price and volume visualization (with YFinance)
-- 💬 AI chat interface to analyze and compare selected stocks
-- 🧠 Choose between **multiple OpenRouter LLM models**
-- 🔒 API key setup right inside the app
-- 📈 Supports custom tickers and combined charts
-- 🧾 Contextual chat memory for financial Q&A
-- 👨‍💻 Built for learning + production readiness
+**Roadmap**
 
------
-## Stock price Chart
+| Phase | What |
+|---|---|
+| 2 | AI analyst with tool calling. Answers render as live components (comparison cards, charts, explainers) and stream as they're generated. A shared server key means no setup for visitors, with bring-your-own-key as a fallback. |
+| 3 | News linked to price moves. Unusual moves are matched to headlines, cited in AI answers, and marked on charts. |
+| 4 | Local-first watchlist and portfolio stored in localStorage, CSV import (Zerodha and Groww), and an AI portfolio review. |
+| 5 | A daily AI market brief, regenerated every few hours with no database. |
 
-<img width="1226" height="415" alt="Fin-Robo image1" src="https://github.com/user-attachments/assets/5656df37-7c3d-420b-8a68-a457013bb501" />
+## Tech stack
 
-## Combined-Close Comparison Stock chart
+| Area | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router, Cache Components, Partial Prerendering) and React 19 |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 with design tokens in `globals.css`; Geist font |
+| Charts | TradingView `lightweight-charts`, plus server-rendered SVG sparklines |
+| Market data | `yahoo-finance2`, server-side only, cached with `"use cache"` |
+| Search UI | `cmdk` |
+| Hosting | Vercel |
 
-<img width="1279" height="419" alt="Fin-Robo image2" src="https://github.com/user-attachments/assets/bcafd02b-21a1-4dea-b688-2b054bd4cd0f" />
+### How data flows
 
-## Chat with Fin-Robo
+```
+Browser ──► Next.js server components ──► src/lib/market-data.ts ──► Yahoo Finance
+                    │                          ("use cache" + cacheLife)
+                    └── /api/search, /api/history (client-side interactions)
+```
 
-<img width="1281" height="487" alt="Fin-Robo image3" src="https://github.com/user-attachments/assets/b8cdae95-9991-4508-b9f6-095721f2392d" />
+- **The overview page is prerendered and revalidated about every minute**, so visitors get static HTML and Yahoo is hit at most once a minute.
+- **Stock pages use Partial Prerendering.** The shell is static, and live data streams in behind `<Suspense>` skeletons.
+- **Every number shown is computed in [`src/lib/indicators.ts`](./src/lib/indicators.ts).** The AI analyst will call the same functions, so it quotes calculated values instead of guessing.
 
-<img width="1271" height="509" alt="Fin-Robo image4" src="https://github.com/user-attachments/assets/b29ed912-a920-425b-9a5b-0dbe1f233bec" />
+## Getting started
 
-<img width="1313" height="505" alt="Screenshot from 2026-01-21 12-20-51" src="https://github.com/user-attachments/assets/c54f5f52-122a-48df-b0bd-0cd1045bb1ec" />
+```bash
+npm install
+npm run dev            # live data from Yahoo Finance
+FINROBO_MOCK=1 npm run dev   # deterministic synthetic data, no network needed
+```
 
-------
-## 🧰 Tech Stack
+Open http://localhost:3000.
 
-- **Frontend/UI:** Streamlit  
-- **Backend:** OpenRouter API (GPT-OSS, Gemma, Llama, DeepSeek, etc.)  
-- **Data Source:** Yahoo Finance via `yfinance`  
-- **Visualization:** Plotly  
-- **Language:** Python 3.12+
+### Environment variables
 
----
+See [`.env.example`](./.env.example). Phase 1 needs none. `FINROBO_MOCK=1` switches to offline demo data.
 
-## 🧑‍🏫 How to Use
+## Deploying
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/iamnarendran/Fin-Robo-Your-AI-Powered-Financial-Analyst
-   cd fin-robo
+1. Import the repo into [Vercel](https://vercel.com/new). It auto-detects Next.js, so no configuration is needed.
+2. Add environment variables when phase 2 lands (`GOOGLE_GENERATIVE_AI_API_KEY`, `OPENROUTER_API_KEY`).
 
-2. Install dependencies:
-   
-    ```bash
-    pip install -r requirements.txt
-  
-3. Run the app locally:
-    ```bash
-    streamlit run finrobo_app.py
+## Disclaimer
 
-4. Deployed on [Streamlit Cloud 🔗](https://fin-robo-your-ai-powered-financial-analyst.streamlit.app/)
+Market data comes from Yahoo Finance through an unofficial API and may be delayed. Fin-Robo is an educational project and does not provide investment advice.
 
-5. Once open:
-   Enter your OpenRouter API key or Gemini API Key in the sidebar.
-   Select an AI model.
-   Choose or type stock tickers.
-   Ask Fin-Robo questions like:
-     ```bash
-      “Compare Tesla and Apple this year.”
-      “Is Google a good buy now based on the chart?”
+## Author
 
------
-
-## Video:
-
-https://github.com/user-attachments/assets/e858bae8-4d37-4788-890c-de0e4cde6d84
-
-------
-
-
-## 🪄 Future Ideas
-
-- 🗣️ Voice-based financial Q&A
-
-- 📰 Real-time stock news summarization
-
-- 🧩 Portfolio optimization suggestions
-
-- 📊 Sentiment tracking and forecasting
-
- - 📽️ Youtube Search Integration for News Trends on Finance
-             
- - 💹 Realtime Market Tracker Dashboard
-             
- - 📊 Fin-Robo “Advisor Mode” (Recommendation Insights) to analyze a user’s watchlist and suggest buy/sell ideas.
-                
-- 🗣️ Multi-Agent System (With LangGraph) 
-                
-     - 📈 Analyst Agent: Handles stock trends & metrics
-
-     - 📰 News Agent: Summarizes breaking news
-
-     - 💬 Advisor Agent: Gives recommendations
-
-     - 🎨 Visualizer Agent: Plots insights dynamically
-
- - 💰 Portfolio Simulation Mode (User Uploads Portfolio CSV)
-             
- - 👨‍🏫 AI-Powered Investment Tutor Mode
-             
- - 🧠 SLM implementation (Local)
-------
-
-🔗 Author
-
-👨‍💻 **Narendran Karthikeyan**
-
-📎 [LinkedIn](https://github.com/iamnarendran) | [GitHub](https://www.linkedin.com/in/narendran-karthikeyan%F0%9F%8C%B3-95862423b)|
-
------
+**Narendran Karthikeyan**. [GitHub](https://github.com/iamnarendran) · [LinkedIn](https://www.linkedin.com/in/narendran-karthikeyan%F0%9F%8C%B3-95862423b)
