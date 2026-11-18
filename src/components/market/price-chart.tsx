@@ -12,6 +12,7 @@ import {
 } from "lightweight-charts";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { cssVarToRgba } from "@/lib/css-color";
 import { RANGES, type Candle, type Range } from "@/lib/types";
 import { cn, formatChange, formatNumber, formatPercent, trendClass } from "@/lib/utils";
 
@@ -22,17 +23,6 @@ type Props = {
   initialRange: Range;
   initialCandles: Candle[];
 };
-
-/** Resolve any CSS colour (including oklch) to rgba via a 1px canvas. */
-function cssVarToRgba(name: string, alpha = 1) {
-  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const ctx = document.createElement("canvas").getContext("2d");
-  if (!ctx) return value;
-  ctx.fillStyle = value;
-  ctx.fillRect(0, 0, 1, 1);
-  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 
 /** Seconds to add so the chart's UTC axis shows exchange-local time. */
 function tzOffsetSeconds(timeZone: string, unixSeconds: number) {

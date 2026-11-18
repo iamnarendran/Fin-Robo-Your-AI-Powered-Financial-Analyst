@@ -1,4 +1,6 @@
+import { Sparkles } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ChangePill } from "@/components/market/change-pill";
@@ -62,6 +64,13 @@ async function StockView({ params }: Props) {
             </span>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{quote.name}</h1>
+          <Link
+            href={`/ask?symbol=${encodeURIComponent(symbol)}&q=${encodeURIComponent(`Analyse ${quote.name} (${symbol})`)}`}
+            className="mt-2 inline-flex items-center gap-1.5 rounded-lg border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:border-ring"
+          >
+            <Sparkles className="size-3.5 text-brand" aria-hidden="true" />
+            Ask Fin-Robo about {displaySymbol(symbol)}
+          </Link>
         </div>
         <div className="sm:text-right">
           <div className="text-3xl font-semibold tracking-tight tabular">{formatPrice(quote.price, quote.currency)}</div>
