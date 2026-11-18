@@ -22,6 +22,13 @@
   --down: oklch(0.58 0.2 22);
   --down-soft: oklch(0.95 0.035 22);
   --chart-grid: oklch(0.94 0.004 260);
+  /* Categorical series (validated with the dataviz palette checker).
+     Green/red slots are skipped: they mean up/down in this app. */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #6250d6;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
 }
 
 .dark {
@@ -40,6 +47,11 @@
   --down: oklch(0.7 0.17 22);
   --down-soft: oklch(0.3 0.07 22);
   --chart-grid: oklch(0.23 0.006 260);
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #9085e9;
+  --series-4: #c98500;
+  --series-5: #d55181;
 }
 
 @theme inline {

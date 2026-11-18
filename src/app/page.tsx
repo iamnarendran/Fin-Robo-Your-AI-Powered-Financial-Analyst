@@ -1,4 +1,6 @@
+import { connection } from "next/server";
 import { Suspense } from "react";
+import { AskBox } from "@/components/chat/ask-box";
 import { IndexCard, IndexCardSkeleton } from "@/components/market/index-card";
 import { QuoteTable, QuoteTableSkeleton } from "@/components/market/quote-table";
 import { getQuotes, getSparkline, safe } from "@/lib/market-data";
@@ -14,6 +16,8 @@ export default function HomePage() {
           <kbd className="rounded border bg-muted px-1.5 font-mono text-xs">⌘K</kbd> to look up any stock.
         </p>
       </div>
+
+      <AskBox />
 
       <Section title="India" description="NSE and BSE benchmark indices">
         <Suspense fallback={<CardGridSkeleton count={4} />}>
@@ -72,7 +76,13 @@ function CardGridSkeleton({ count }: { count: number }) {
   );
 }
 
+/*
+ * Each section calls connection() so it renders at request time instead of at
+ * build time: a Yahoo outage or block during `next build` must never fail a
+ * deploy. Data is still cached by "use cache" in market-data.ts.
+ */
 async function IndexGrid({ instruments }: { instruments: Instrument[] }) {
+  await connection();
   const symbols = instruments.map((i) => i.symbol);
   const [quotes, sparks] = await Promise.all([
     safe(getQuotes(symbols), []),
@@ -92,6 +102,7 @@ async function IndexGrid({ instruments }: { instruments: Instrument[] }) {
 }
 
 async function NiftyMovers() {
+  await connection();
   const quotes = (await safe(getQuotes(NIFTY_50.map((i) => i.symbol)), [])).filter((q) => q.changePercent != null);
   if (quotes.length === 0) return <Unavailable />;
 
@@ -112,6 +123,7 @@ async function NiftyMovers() {
 }
 
 async function UsPopular() {
+  await connection();
   const quotes = await safe(getQuotes(POPULAR_US.map((i) => i.symbol)), []);
   if (quotes.length === 0) return <Unavailable />;
   return <QuoteTable title="US large caps" quotes={quotes} />;
