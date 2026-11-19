@@ -2,7 +2,7 @@ import "server-only";
 
 import { cacheLife } from "next/cache";
 import YahooFinance from "yahoo-finance2";
-import { knownName } from "./markets";
+import { GLOBAL_MARKETS, INDIA_INDICES, NIFTY_50, knownName } from "./markets";
 import { mockHistory, mockProfile, mockQuote, mockSearch } from "./mock-data";
 import type { Candle, Profile, Quote, Range, SearchResult } from "./types";
 
@@ -72,6 +72,47 @@ export async function getQuotes(symbols: string[]): Promise<Quote[]> {
 export async function getQuote(symbol: string): Promise<Quote | null> {
   const [quote] = await getQuotes([symbol]);
   return quote ?? null;
+}
+
+/* ------------------------------------------------------------------ */
+/* Market snapshot                                                     */
+/* ------------------------------------------------------------------ */
+
+export type CompactQuote = Pick<Quote, "symbol" | "name" | "currency" | "price" | "change" | "changePercent" | "marketState">;
+
+export const compactQuote = (q: Quote): CompactQuote => ({
+  symbol: q.symbol,
+  name: q.name,
+  currency: q.currency,
+  price: q.price,
+  change: q.change,
+  changePercent: q.changePercent,
+  marketState: q.marketState,
+});
+
+export type MarketSnapshot = {
+  indices: CompactQuote[];
+  global: CompactQuote[];
+  gainers: CompactQuote[];
+  losers: CompactQuote[];
+  breadth: { advancing: number; declining: number };
+};
+
+/** Indian indices, global cues and NIFTY 50 movers: shared by the AI tool and the daily brief. */
+export async function getMarketSnapshot(): Promise<MarketSnapshot> {
+  const [indices, global, nifty] = await Promise.all([
+    getQuotes(INDIA_INDICES.map((i) => i.symbol)),
+    getQuotes(GLOBAL_MARKETS.map((i) => i.symbol)),
+    getQuotes(NIFTY_50.map((i) => i.symbol)),
+  ]);
+  const ranked = nifty.filter((q) => q.changePercent != null).sort((a, b) => b.changePercent! - a.changePercent!);
+  return {
+    indices: indices.map(compactQuote),
+    global: global.map(compactQuote),
+    gainers: ranked.filter((q) => q.changePercent! > 0).slice(0, 4).map(compactQuote),
+    losers: ranked.filter((q) => q.changePercent! < 0).slice(-4).reverse().map(compactQuote),
+    breadth: { advancing: ranked.filter((q) => q.changePercent! > 0).length, declining: ranked.filter((q) => q.changePercent! < 0).length },
+  };
 }
 
 /* ------------------------------------------------------------------ */

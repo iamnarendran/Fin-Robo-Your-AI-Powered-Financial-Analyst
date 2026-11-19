@@ -55,7 +55,7 @@ function dailySeries(symbol: string, days: number): Candle[] {
 /** Daily random walk ending at today's (UTC) date. */
 function generateWalk(symbol: string, days: number): Candle[] {
   const rand = rng(hash(symbol));
-  const vol = symbol.startsWith("^") ? 0.009 : 0.017;
+  const vol = symbol.includes("=") ? 0.003 : symbol.startsWith("^") ? 0.009 : 0.017;
   const drift = (rand() - 0.42) * 0.0012;
   const today = new Date();
   today.setUTCHours(10, 0, 0, 0);
@@ -192,17 +192,17 @@ export function mockSearch(query: string): SearchResult[] {
     }));
 }
 
-const UP_HEADLINES = [
+const COMPANY_UP = [
   "{name} shares jump after strong quarterly results beat estimates",
   "{name} rallies as brokerages upgrade the stock on margin outlook",
   "{name} wins large order, stock climbs to multi-week high",
 ];
-const DOWN_HEADLINES = [
+const COMPANY_DOWN = [
   "{name} shares fall after quarterly profit misses estimates",
   "{name} slides as brokerage downgrades stock, cuts target",
   "{name} drops amid sector-wide sell-off in heavyweights",
 ];
-const BACKGROUND_HEADLINES = [
+const COMPANY_BACKGROUND = [
   "What analysts expect from {name} ahead of next quarter",
   "{name} board to consider fundraise proposal next week",
   "FII holding in {name} changes marginally in latest filing",
@@ -210,7 +210,20 @@ const BACKGROUND_HEADLINES = [
 ];
 
 /** Demo headlines placed on the same days as the mock series' unusual moves. */
+const INDEX_UP = ["Sensex, Nifty end higher as banking stocks lead gains", "Markets rally as FIIs turn net buyers; Nifty climbs"];
+const INDEX_DOWN = ["Sensex, Nifty fall as IT stocks drag; global cues weak", "Markets slide as crude prices rise and rupee weakens"];
+const INDEX_BACKGROUND = [
+  "RBI monetary policy decision due later this month: what to expect",
+  "Q2 earnings season: what analysts expect from India Inc",
+  "FII flows: foreign investors' stance on Indian equities this week",
+  "Rupee, crude and US yields: the global cues to track this week",
+];
+
 export function mockNews(symbol: string, name: string): Article[] {
+  const isIndex = symbol.startsWith("^");
+  const UP_HEADLINES = isIndex ? INDEX_UP : COMPANY_UP;
+  const DOWN_HEADLINES = isIndex ? INDEX_DOWN : COMPANY_DOWN;
+  const BACKGROUND_HEADLINES = isIndex ? INDEX_BACKGROUND : COMPANY_BACKGROUND;
   const candles = mockHistory(symbol, "1y");
   const rand = rng(hash(symbol + "news"));
   const pick = (list: string[]) => list[Math.floor(rand() * list.length)].replace("{name}", name);

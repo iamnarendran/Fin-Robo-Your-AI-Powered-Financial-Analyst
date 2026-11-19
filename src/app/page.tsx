@@ -1,8 +1,10 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { BriefCard, BriefCardSkeleton } from "@/components/brief/brief-view";
 import { AskBox } from "@/components/chat/ask-box";
 import { IndexCard, IndexCardSkeleton } from "@/components/market/index-card";
 import { QuoteTable, QuoteTableSkeleton } from "@/components/market/quote-table";
+import { getDailyBrief } from "@/lib/brief";
 import { getQuotes, getSparkline, safe } from "@/lib/market-data";
 import { GLOBAL_MARKETS, INDIA_INDICES, NIFTY_50, POPULAR_US, type Instrument } from "@/lib/markets";
 
@@ -16,6 +18,10 @@ export default function HomePage() {
           <kbd className="rounded border bg-muted px-1.5 font-mono text-xs">⌘K</kbd> to look up any stock.
         </p>
       </div>
+
+      <Suspense fallback={<BriefCardSkeleton />}>
+        <TodaysBrief />
+      </Suspense>
 
       <AskBox />
 
@@ -99,6 +105,12 @@ async function IndexGrid({ instruments }: { instruments: Instrument[] }) {
       ))}
     </div>
   );
+}
+
+async function TodaysBrief() {
+  await connection();
+  const brief = await safe(getDailyBrief(), null);
+  return brief ? <BriefCard brief={brief} /> : null;
 }
 
 async function NiftyMovers() {

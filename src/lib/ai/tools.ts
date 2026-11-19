@@ -3,8 +3,7 @@ import "server-only";
 import { tool } from "ai";
 import { z } from "zod";
 import { pctChange, summarize, maxDrawdown, rsi, volatility } from "@/lib/indicators";
-import { getHistory, getProfile, getQuote, getQuotes, searchSymbols } from "@/lib/market-data";
-import { GLOBAL_MARKETS, INDIA_INDICES, NIFTY_50 } from "@/lib/markets";
+import { compactQuote, getHistory, getMarketSnapshot, getProfile, getQuote, getQuotes, searchSymbols } from "@/lib/market-data";
 import { getMoveTimeline } from "@/lib/news";
 import type { Holding } from "@/lib/portfolio";
 import { analyzePortfolio } from "@/lib/portfolio-data";
@@ -34,18 +33,6 @@ function sample(candles: Candle[], max: number): Point[] {
   return candles
     .filter((_, i) => i === 0 || (candles.length - 1 - i) % step === 0)
     .map((c) => ({ time: c.time, value: c.close }));
-}
-
-function compactQuote(q: Quote) {
-  return {
-    symbol: q.symbol,
-    name: q.name,
-    currency: q.currency,
-    price: q.price,
-    change: q.change,
-    changePercent: q.changePercent,
-    marketState: q.marketState,
-  };
 }
 
 const round = (v: number | null, d = 2) => (v == null ? null : Number(v.toFixed(d)));
@@ -196,22 +183,7 @@ export const tools = {
     description:
       "Today's market snapshot: Indian indices (NIFTY 50, SENSEX, Bank, IT), global cues (S&P 500, Nasdaq, USD/INR, gold, crude, Bitcoin) and NIFTY 50 top gainers/losers. Use for 'how is the market today', 'what moved', 'NIFTY today'.",
     inputSchema: z.object({}),
-    execute: async () => {
-      const [indices, global, nifty] = await Promise.all([
-        getQuotes(INDIA_INDICES.map((i) => i.symbol)),
-        getQuotes(GLOBAL_MARKETS.map((i) => i.symbol)),
-        getQuotes(NIFTY_50.map((i) => i.symbol)),
-      ]);
-      const ranked = nifty.filter((q) => q.changePercent != null).sort((a, b) => b.changePercent! - a.changePercent!);
-      const breadth = { advancing: ranked.filter((q) => q.changePercent! > 0).length, declining: ranked.filter((q) => q.changePercent! < 0).length };
-      return {
-        indices: indices.map(compactQuote),
-        global: global.map(compactQuote),
-        gainers: ranked.slice(0, 4).map(compactQuote),
-        losers: ranked.slice(-4).reverse().map(compactQuote),
-        breadth,
-      };
-    },
+    execute: () => getMarketSnapshot(),
   }),
 
   explainPriceMoves: tool({

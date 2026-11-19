@@ -15,6 +15,9 @@ export function SiteHeader() {
           <Link href="/" className="rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:text-foreground">
             Markets
           </Link>
+          <Link href="/brief" className="hidden rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:text-foreground lg:inline">
+            Brief
+          </Link>
           <Link href="/ask" className="rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:text-foreground">
             Ask AI
           </Link>

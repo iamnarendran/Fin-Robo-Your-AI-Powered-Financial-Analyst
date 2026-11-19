@@ -23,6 +23,13 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 - **No setup needed for visitors.** A shared Gemini key is rate-limited per IP. Users can add their own Gemini or OpenRouter key in **AI settings**; it stays in their browser.
 - Educational framing is built into the system prompt: no buy or sell calls.
 
+**Daily AI market brief (phase 5)**
+
+- A two-minute read at the top of the home page and in full at `/brief`: headline, summary, key points, indices, NIFTY 50 movers, global cues, what to watch and market headlines.
+- **Written by AI from live data** using structured output (a Zod schema), and told to use only the numbers and headlines it's given. No database is needed: the brief is cached with `"use cache"` and regenerated about once an hour, so AI cost stays flat however many people visit.
+- **Never breaks.** With no AI key, or if the AI call fails, a template brief built from the same numbers is shown instead and retried within minutes. The byline says which one you're reading.
+- Future idea: email the brief to subscribers each morning (needs a mail provider and a subscriber list).
+
 **Watchlist & portfolio (phase 4)**
 
 - **Local-first.** The watchlist and holdings live in the browser's localStorage, with no account and no database. They leave the browser only inside a request the user makes: pricing the portfolio, or asking the AI to review it.
@@ -62,7 +69,8 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 | 2 | ✅ AI analyst with tool calling and answers rendered as live components |
 | 3 | ✅ News linked to price moves: unusual-move detection, benchmark comparison, cited AI answers |
 | 4 | ✅ Local-first watchlist and portfolio, Zerodha CSV import, AI portfolio review |
-| 5 | A daily AI market brief, regenerated every few hours with no database. |
+| 5 | ✅ Daily AI market brief with template fallback, cached and refreshed about hourly |
+| Next | Email the daily brief to subscribers · voice Q&A · strategy backtest playground |
 
 ## Tech stack
 
@@ -103,7 +111,7 @@ FINROBO_MOCK=1 npm run dev   # synthetic data + scripted demo AI, no network or 
 Open http://localhost:3000.
 
 ```bash
-npm test          # unit tests (indicators, moves/news, portfolio, CSV import)
+npm test          # unit tests (indicators, moves/news, portfolio, CSV import, brief)
 npm run lint && npm run typecheck
 ```
 
