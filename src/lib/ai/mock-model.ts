@@ -118,6 +118,12 @@ function narrate(results: ToolResult[]): { prose: string; followUps: string[] } 
         prose: `Here's today's snapshot. Breadth among NIFTY 50 stocks is ${v.breadth?.advancing} advancing vs ${v.breadth?.declining} declining.\n\n_Demo mode: this summary is scripted._`,
         followUps: ["Why is the top gainer up?", "Compare NIFTY with S&P 500", "What is market breadth?"],
       };
+    case "reviewPortfolio":
+      if (v.empty) return { prose: "You haven't added any holdings yet.", followUps: ["Analyse Reliance", "How is the market today?"] };
+      return {
+        prose: `Your portfolio is ${pct(v.pnlPct)} overall. ${v.flags?.length ? `The main thing to watch: ${v.flags[0].detail}` : "No concentration flags stand out."}\n\n_Demo mode: this summary is scripted._`,
+        followUps: [`Why did ${v.positions?.[0]?.symbol?.replace(".NS", "") ?? "my top holding"} move?`, "What is diversification?", "Compare my top two holdings"],
+      };
     case "explainConcept":
       return { prose: "", followUps: ["Show me a stock with a low P/E", "What is EPS?", "Analyse TCS"] };
     case "getQuotes":
@@ -130,8 +136,13 @@ function narrate(results: ToolResult[]): { prose: string; followUps: string[] } 
   }
 }
 
-function plan(question: string): StreamPart[] {
+function plan(question: string, system: string): StreamPart[] {
   const q = question.toLowerCase();
+  if (/\b(portfolio|holdings|diversif\w*)\b/.test(q)) return toolCall("reviewPortfolio", {});
+  if (/\bwatchlist\b/.test(q)) {
+    const list = system.match(/watchlist: ([^\n]+)\./)?.[1]?.split(", ").filter(Boolean) ?? [];
+    if (list.length) return toolCall("getQuotes", { symbols: list.slice(0, 8) });
+  }
   const symbols = findSymbols(question);
 
   if (/\b(what is|what's a|what are|explain|meaning of|define)\b/.test(q) && !/\bprice\b/.test(q)) {
@@ -170,7 +181,8 @@ export function createMockModel() {
       if (results.some((r) => r.toolName === "suggestFollowUps")) {
         chunks = [finish("stop")];
       } else if (results.length === 0) {
-        const calls = plan(lastUserText(messages));
+        const system = messages.find((m) => m.role === "system");
+        const calls = plan(lastUserText(messages), typeof system?.content === "string" ? system.content : "");
         if (calls.length) chunks = [...calls, finish("tool-calls")];
         else {
           const { prose, followUps } = narrate([]);

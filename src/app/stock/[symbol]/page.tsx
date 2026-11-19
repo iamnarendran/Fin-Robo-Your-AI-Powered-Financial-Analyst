@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ChangePill } from "@/components/market/change-pill";
 import { MoveTimeline } from "@/components/market/move-timeline";
+import { WatchButton } from "@/components/portfolio/watch-button";
 import { PriceChart } from "@/components/market/price-chart";
 import { CompanyProfile, KeyStats, PerformanceCard } from "@/components/market/stock-panels";
 import { summarize } from "@/lib/indicators";
@@ -67,13 +68,16 @@ async function StockView({ params }: Props) {
             </span>
           </div>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{quote.name}</h1>
+          <div className="mt-2 flex flex-wrap gap-2">
+          <WatchButton symbol={symbol} />
           <Link
             href={`/ask?symbol=${encodeURIComponent(symbol)}&q=${encodeURIComponent(`Analyse ${quote.name} (${symbol})`)}`}
-            className="mt-2 inline-flex items-center gap-1.5 rounded-lg border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:border-ring"
+            className="inline-flex items-center gap-1.5 rounded-lg border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:border-ring"
           >
             <Sparkles className="size-3.5 text-brand" aria-hidden="true" />
             Ask Fin-Robo about {displaySymbol(symbol)}
           </Link>
+          </div>
         </div>
         <div className="sm:text-right">
           <div className="text-3xl font-semibold tracking-tight tabular">{formatPrice(quote.price, quote.currency)}</div>

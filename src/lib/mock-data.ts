@@ -152,12 +152,26 @@ export function mockQuote(symbol: string): Quote {
   };
 }
 
+const SECTOR_RULES: [RegExp, string, string][] = [
+  [/bank|financ|life|jio fin|bajaj finserv|shriram/i, "Financial Services", "Banks & Insurance"],
+  [/pharma|cipla|reddy|hospital/i, "Healthcare", "Pharmaceuticals"],
+  [/steel|hindalco|coal|ongc|ntpc|power|reliance|adani/i, "Energy & Materials", "Energy, Metals & Utilities"],
+  [/motor|auto|maruti|mahindra|eicher|hero/i, "Consumer Cyclical", "Automobiles"],
+  [/unilever|itc|nestl|britannia|tata consumer|titan|trent|asian paints|eternal/i, "Consumer Defensive", "Consumer Goods"],
+  [/airtel|meta|alphabet|netflix/i, "Communication Services", "Telecom & Media"],
+  [/larsen|ultratech|grasim|ports|electronics/i, "Industrials", "Engineering & Infrastructure"],
+];
+
+function mockSector(name: string) {
+  const rule = SECTOR_RULES.find(([re]) => re.test(name));
+  return rule ? { sector: rule[1], industry: rule[2] } : { sector: "Technology", industry: "Information Technology Services" };
+}
+
 export function mockProfile(symbol: string): Profile | null {
   if (symbol.startsWith("^") || symbol.includes("=")) return null;
   const name = knownName(symbol) ?? symbol;
   return {
-    sector: "Technology",
-    industry: "Information Technology Services",
+    ...mockSector(name),
     summary: `${name} is shown here with synthetic demo data because Fin-Robo is running in mock mode (FINROBO_MOCK=1). Deploy without this flag to see the real company profile from Yahoo Finance.`,
     website: null,
     employees: 100000 + (hash(symbol) % 500000),

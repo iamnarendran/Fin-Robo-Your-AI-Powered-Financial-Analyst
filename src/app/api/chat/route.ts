@@ -2,8 +2,9 @@ import { convertToModelMessages, createUIMessageStreamResponse, isStepCount, str
 import type { NextRequest } from "next/server";
 import { resolveModel } from "@/lib/ai/model";
 import { systemPrompt } from "@/lib/ai/prompt";
-import { tools } from "@/lib/ai/tools";
+import { buildTools } from "@/lib/ai/tools";
 import type { ChatMessage } from "@/lib/ai/types";
+import { holdingsSchema } from "@/lib/portfolio-data";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
   const raw = await request.text();
   if (raw.length > MAX_BODY_BYTES) return Response.json({ error: "Conversation too long. Start a new chat." }, { status: 413 });
 
-  let body: { messages?: ChatMessage[]; context?: { symbol?: string } };
+  let body: { messages?: ChatMessage[]; context?: { symbol?: string; holdings?: unknown; watchlist?: unknown } };
   try {
     body = JSON.parse(raw);
   } catch {
@@ -41,9 +42,15 @@ export async function POST(request: NextRequest) {
 
   const symbol = typeof body.context?.symbol === "string" && /^[\w.^=&-]{1,24}$/.test(body.context.symbol) ? body.context.symbol : undefined;
 
+  const holdings = holdingsSchema.safeParse(body.context?.holdings ?? []);
+  const watchlist = Array.isArray(body.context?.watchlist)
+    ? body.context.watchlist.filter((s): s is string => typeof s === "string" && /^[\w.^=&-]{1,24}$/.test(s)).slice(0, 50)
+    : [];
+  const tools = buildTools({ holdings: holdings.success ? holdings.data : [], watchlist });
+
   const result = streamText({
     model: resolved.model,
-    instructions: systemPrompt({ symbol }),
+    instructions: systemPrompt({ symbol, watchlist, hasHoldings: holdings.success && holdings.data.length > 0 }),
     messages: await convertToModelMessages(messages, { tools }),
     tools,
     stopWhen: isStepCount(6),

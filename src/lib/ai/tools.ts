@@ -6,6 +6,8 @@ import { pctChange, summarize, maxDrawdown, rsi, volatility } from "@/lib/indica
 import { getHistory, getProfile, getQuote, getQuotes, searchSymbols } from "@/lib/market-data";
 import { GLOBAL_MARKETS, INDIA_INDICES, NIFTY_50 } from "@/lib/markets";
 import { getMoveTimeline } from "@/lib/news";
+import type { Holding } from "@/lib/portfolio";
+import { analyzePortfolio } from "@/lib/portfolio-data";
 import type { Candle, Quote } from "@/lib/types";
 
 /**
@@ -293,4 +295,49 @@ export const tools = {
   }),
 };
 
-export type FinRoboTools = typeof tools;
+/** Per-request context the browser sends along (it is never stored server-side). */
+export type ChatContext = { holdings: Holding[]; watchlist: string[] };
+
+/**
+ * Tools that need the user's own data. Holdings live in the browser, so they
+ * arrive with each request and are bound into these tools by closure.
+ */
+export function buildTools(ctx: ChatContext) {
+  return {
+    ...tools,
+    reviewPortfolio: tool({
+      description:
+        "Review the user's own portfolio (stored in their browser): value, P&L, today's change, allocation by stock and sector, and risk flags such as concentration. Use for 'review my portfolio', 'how are my holdings doing', 'am I diversified'.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        if (ctx.holdings.length === 0) return { empty: true as const };
+        return { empty: false as const, analysis: await analyzePortfolio(ctx.holdings) };
+      },
+      toModelOutput: ({ output }) => ({
+        type: "json",
+        value: output.empty
+          ? { empty: true, note: "The user has no holdings yet. Suggest adding them on the Portfolio page or importing a Zerodha CSV." }
+          : {
+              currency: "INR (US holdings converted at live USD/INR)",
+              valueInr: Math.round(output.analysis.valueInr),
+              investedInr: Math.round(output.analysis.investedInr),
+              pnlPct: round(output.analysis.pnlPct, 1),
+              dayChangePct: round(output.analysis.dayChangePct, 2),
+              positions: output.analysis.positions.map((p) => ({
+                symbol: p.symbol,
+                name: p.name,
+                weightPct: round(p.weight * 100, 1),
+                pnlPct: round(p.pnlPct, 1),
+                dayChangePct: round(p.dayChangePct, 2),
+                sector: p.sector,
+              })),
+              sectors: output.analysis.sectors.map((x) => ({ sector: x.sector, weightPct: round(x.weight * 100, 1) })),
+              flags: output.analysis.flags,
+              unpriced: output.analysis.missing,
+            },
+      }),
+    }),
+  };
+}
+
+export type FinRoboTools = ReturnType<typeof buildTools>;

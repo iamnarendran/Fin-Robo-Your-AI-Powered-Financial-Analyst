@@ -23,6 +23,17 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 - **No setup needed for visitors.** A shared Gemini key is rate-limited per IP. Users can add their own Gemini or OpenRouter key in **AI settings**; it stays in their browser.
 - Educational framing is built into the system prompt: no buy or sell calls.
 
+**Watchlist & portfolio (phase 4)**
+
+- **Local-first.** The watchlist and holdings live in the browser's localStorage, with no account and no database. They leave the browser only inside a request the user makes: pricing the portfolio, or asking the AI to review it.
+- **Watchlist:** ★ Watch on any stock page. `/watchlist` refreshes prices every minute.
+- **Portfolio:**
+  - Add holdings with a ticker picker, or import a **Zerodha Kite/Console CSV** (NSE suffixes are added automatically) or the generic `symbol,quantity,avg_price` template. Back up and restore as JSON.
+  - See value, total P&L and today's change in ₹. US holdings are converted at the live USD/INR rate.
+  - Allocation by stock and by sector.
+  - Descriptive risk flags: concentration, sector tilt, too few holdings, positions far below cost, currency exposure.
+- **AI review:** "Review my portfolio" renders the same analysis as a card and comments on concentration and risk, without trade recommendations.
+
 **News linked to price moves (phase 3)**
 
 - **Unusual-move detection.** Daily moves at least 2σ beyond a stock's own volatility (and at least 1.5%) are flagged and marked on the price chart. Hover a marker to see the move.
@@ -50,7 +61,7 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 |---|---|
 | 2 | ✅ AI analyst with tool calling and answers rendered as live components |
 | 3 | ✅ News linked to price moves: unusual-move detection, benchmark comparison, cited AI answers |
-| 4 | Local-first watchlist and portfolio stored in localStorage, CSV import (Zerodha and Groww), and an AI portfolio review. |
+| 4 | ✅ Local-first watchlist and portfolio, Zerodha CSV import, AI portfolio review |
 | 5 | A daily AI market brief, regenerated every few hours with no database. |
 
 ## Tech stack
@@ -63,7 +74,8 @@ Ask anything at `/ask`, from the home page prompt box, or with "Ask Fin-Robo abo
 | Charts | TradingView `lightweight-charts`, plus server-rendered SVG sparklines |
 | Market data | `yahoo-finance2`, server-side only, cached with `"use cache"` |
 | News | Google News RSS and Yahoo Finance, parsed and cached server-side |
-| Testing | Vitest unit tests for indicators and move/news linking; GitHub Actions CI |
+| State | Zustand persisted to localStorage (AI settings, watchlist, holdings) |
+| Testing | Vitest unit tests for indicators, move/news linking, portfolio maths and CSV import; GitHub Actions CI |
 | AI | Vercel AI SDK v7 (`streamText`, typed tool parts, `useChat`), Gemini or OpenRouter |
 | Search UI | `cmdk` |
 | Hosting | Vercel |
@@ -91,7 +103,7 @@ FINROBO_MOCK=1 npm run dev   # synthetic data + scripted demo AI, no network or 
 Open http://localhost:3000.
 
 ```bash
-npm test          # unit tests (indicators, move detection, news linking)
+npm test          # unit tests (indicators, moves/news, portfolio, CSV import)
 npm run lint && npm run typecheck
 ```
 

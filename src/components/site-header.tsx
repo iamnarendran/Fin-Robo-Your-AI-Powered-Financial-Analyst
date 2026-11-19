@@ -1,4 +1,3 @@
-import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { CommandMenu } from "./command-menu";
 import { Logo } from "./logo";
@@ -19,16 +18,15 @@ export function SiteHeader() {
           <Link href="/ask" className="rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:text-foreground">
             Ask AI
           </Link>
+          <Link href="/watchlist" className="rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:text-foreground">
+            Watchlist
+          </Link>
+          <Link href="/portfolio" className="rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:text-foreground">
+            Portfolio
+          </Link>
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <Link
-            href="/ask"
-            className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground md:hidden"
-            aria-label="Ask AI"
-          >
-            <Sparkles className="size-4" />
-          </Link>
-          <MarketStatus className="hidden lg:flex" />
+          <MarketStatus className="hidden xl:flex" />
           <CommandMenu />
           <ThemeToggle />
         </div>

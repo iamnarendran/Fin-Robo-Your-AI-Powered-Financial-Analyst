@@ -2,10 +2,11 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { ArrowUp, BarChart3, GraduationCap, Globe2, RotateCcw, Scale, Square } from "lucide-react";
+import { ArrowUp, BarChart3, Briefcase, GraduationCap, Globe2, Newspaper, RotateCcw, Scale, Square } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { settingsHeaders } from "@/lib/ai/settings-store";
+import { usePortfolio } from "@/lib/portfolio-store";
 import type { ChatMessage } from "@/lib/ai/types";
 import { displaySymbol } from "@/lib/markets";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,8 @@ const STARTERS = [
   { icon: Scale, label: "Compare", prompt: "Compare TCS, Infosys and HCL Tech over 1 year" },
   { icon: Globe2, label: "Market", prompt: "How is the Indian market doing today?" },
   { icon: GraduationCap, label: "Learn", prompt: "What is a P/E ratio? Use HDFC Bank as an example" },
+  { icon: Briefcase, label: "Portfolio", prompt: "Review my portfolio" },
+  { icon: Newspaper, label: "News", prompt: "Why did Infosys move recently?" },
 ];
 
 /** The API returns `{ error }` JSON; the transport surfaces it as the message text. */
@@ -39,7 +42,11 @@ export function Chat() {
       new DefaultChatTransport<ChatMessage>({
         api: "/api/chat",
         headers: () => settingsHeaders(),
-        body: () => ({ context: { symbol: contextSymbol } }),
+        // Holdings and watchlist live in localStorage; they travel only with chat requests.
+        body: () => {
+          const { holdings, watchlist } = usePortfolio.getState();
+          return { context: { symbol: contextSymbol, holdings, watchlist } };
+        },
       }),
     [contextSymbol],
   );
@@ -162,7 +169,7 @@ export function Chat() {
           e.preventDefault();
           send(input);
         }}
-        className="sticky bottom-4 rounded-2xl border bg-card p-2 shadow-lg shadow-black/5"
+        className="sticky bottom-20 rounded-2xl md:bottom-4 border bg-card p-2 shadow-lg shadow-black/5"
       >
         <div className="flex items-end gap-2">
           <label htmlFor="chat-input" className="sr-only">

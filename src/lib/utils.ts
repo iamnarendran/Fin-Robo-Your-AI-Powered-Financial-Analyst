@@ -50,7 +50,8 @@ export function formatCompact(value: number | null | undefined, currency = "USD"
     if (abs >= 1e12) return `${symbol}${(value / 1e12).toFixed(2)}L Cr`;
     if (abs >= 1e7) return `${symbol}${formatNumber(value / 1e7, abs >= 1e10 ? 0 : 2, "INR")} Cr`;
     if (abs >= 1e5) return `${symbol}${(value / 1e5).toFixed(2)} L`;
-    return formatPrice(value, currency);
+    // Compact figures are for summaries: whole rupees read cleaner than paise.
+    return `${value < 0 ? "-" : ""}${symbol}${formatNumber(abs, abs >= 100 ? 0 : 2, "INR")}`;
   }
   const symbol = currency === "USD" ? "$" : "";
   if (abs >= 1e12) return `${symbol}${(value / 1e12).toFixed(2)}T`;

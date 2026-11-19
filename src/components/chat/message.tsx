@@ -9,6 +9,7 @@ import { ComparisonCard } from "./cards/comparison-card";
 import { ExplainerCard } from "./cards/explainer-card";
 import { MarketSnapshotCard, QuotesCard } from "./cards/market-cards";
 import { MoveCard } from "./cards/move-card";
+import { PortfolioCard } from "./cards/portfolio-card";
 import { StockAnalysisCard } from "./cards/stock-analysis-card";
 
 const short = (symbols?: (string | undefined)[]) => (symbols ?? []).filter(Boolean).map((s) => displaySymbol(s!)).join(", ");
@@ -64,6 +65,11 @@ function Part({ part, sources }: { part: ChatPart; sources: Map<string, Source> 
   switch (part.type) {
     case "text":
       return part.text ? <MarkdownText text={part.text} sources={sources} /> : null;
+
+    case "tool-reviewPortfolio":
+      if (part.state === "output-available") return <PortfolioCard data={part.output} />;
+      if (part.state === "output-error") return <ToolError message={part.errorText} />;
+      return <ToolLoading label="Pricing your holdings…" />;
 
     case "tool-explainPriceMoves":
       if (part.state === "output-available") return <MoveCard data={part.output} />;
